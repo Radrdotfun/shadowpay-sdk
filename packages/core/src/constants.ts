@@ -4,8 +4,6 @@
 
 export const API_URL = 'https://shadow.radr.fun';
 
-export const PROGRAM_ID = 'GQBqwwoikYh7p6KEUHDUu5r9dHHXx9tMGskAPubmFPzD';
-
 export const ENDPOINTS = {
   verify: '/shadowpay/verify',
   settle: '/shadowpay/settle',
