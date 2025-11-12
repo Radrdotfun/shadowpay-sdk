@@ -227,6 +227,8 @@ See [full example](./examples/express-api).
 
 **Privacy:** No one (including ShadowPay) can see the payment amount except the payer and merchant.
 
+**Program ID:** `GQBqwwoikYh7p6KEUHDUu5r9dHHXx9tMGskAPubmFPzD` ([View on Solscan](https://solscan.io/account/GQBqwwoikYh7p6KEUHDUu5r9dHHXx9tMGskAPubmFPzD))
+
 ## 🛠️ Technology Stack
 
 - **Zero-Knowledge Proofs:** Groth16 (via snarkjs)

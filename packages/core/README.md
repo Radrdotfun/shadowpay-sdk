@@ -91,6 +91,7 @@ const usdcAmount = parseAmount(10, 'USDC'); // 10000000
 
 ```typescript
 export const API_URL = 'https://shadow.radr.fun';
+export const PROGRAM_ID = 'GQBqwwoikYh7p6KEUHDUu5r9dHHXx9tMGskAPubmFPzD';
 export const CIRCUIT_URLS = {
   wasm: 'https://shadow.radr.fun/shadowpay/circuit-elgamal/...',
   zkey: 'https://shadow.radr.fun/shadowpay/circuit-elgamal/...',
