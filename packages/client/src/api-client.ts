@@ -1,5 +1,5 @@
 /**
- * API client for communicating with shadow.radr.fun
+ * API client for communicating with ShadowPay backend
  * Handles payment settlement, verification, and token queries
  */
 

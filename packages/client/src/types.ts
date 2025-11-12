@@ -7,7 +7,7 @@ import type { WalletInterface } from './wallet-adapter';
 export interface ShadowPayOptions {
   merchantKey: string; // ✅ Merchant's API key (e.g., 2hTKeADLwNZPeU5MeFcNKV4ttfWtpBUSEMiRVf4jRyjC)
   merchantWallet: string; // ✅ Merchant's wallet address (e.g., BdDcNpsjGKdabkX1xo6XhYhUsJtADYnUT5hPmW5AoLFi)
-  apiUrl?: string; // Shadow API base URL (defaults to https://shadow.radr.fun)
+  apiUrl?: string; // ShadowPay API base URL (defaults to https://shadow.radr.fun)
 }
 
 export interface Settlement {

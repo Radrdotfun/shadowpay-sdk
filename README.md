@@ -324,11 +324,11 @@ MIT License - see [LICENSE](./LICENSE) for details.
 
 ## 🌐 Links
 
-- **Website:** [shadow.radr.fun](https://shadow.radr.fun)
-- **Documentation:** [docs.shadow.radr.fun](https://docs.shadow.radr.fun)
-- **Discord:** [discord.gg/shadowpay](https://discord.gg/shadowpay)
-- **Twitter:** [@shadowpay](https://twitter.com/shadowpay)
-- **GitHub:** [github.com/shadowpay/sdk](https://github.com/shadowpay/sdk)
+- **Website:** [radr.fun](https://radr.fun)
+- **Documentation:** [ShadowPay API](https://registry.scalar.com/@radr/apis/shadowpay-api)
+- **Telegram:** [t.me/radrdotfun](https://t.me/radrdotfun)
+- **Twitter:** [@radrdotfun](https://x.com/radrdotfun)
+- **GitHub:** [github.com/Radrdotfun/shadowpay-sdk](https://github.com/Radrdotfun/shadowpay-sdk)
 
 ## 🙏 Acknowledgments
 
@@ -343,14 +343,14 @@ Built with:
 
 Need help?
 
-- 📧 **Email:** support@shadow.radr.fun
-- 💬 **Discord:** [Join our community](https://discord.gg/shadowpay)
-- 📚 **Docs:** [Documentation](./docs/quickstart.md)
-- 🐛 **Issues:** [GitHub Issues](https://github.com/shadowpay/sdk/issues)
+- 📧 **Email:** hello@radr.fun
+- 💬 **Telegram:** [Join our community](https://t.me/radrdotfun)
+- 📚 **Docs:** [Documentation](https://registry.scalar.com/@radr/apis/shadowpay-api)
+- 🐛 **Issues:** [GitHub Issues](https://github.com/Radrdotfun/shadowpay-sdk/issues)
 
 ---
 
-**Made with ❤️ by the ShadowPay team**
+**Made with ❤️ by the RADR team**
 
 *Accept private payments on Solana in 3 lines of code.*
 
