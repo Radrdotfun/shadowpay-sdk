@@ -5,9 +5,9 @@
 * **Packages:** `@shadowpay/core`, `@shadowpay/client`, `@shadowpay/server`
 * **Language:** TypeScript
 * **License:** MIT
-* **Status:** Public beta (devnet support; mainnet coming soon)
+* **Status:** Live on mainnet
 
-> ShadowPay makes accepting **private, automated x402-style payments** on Solana simple. You get **on-chain PDA escrow**, **Groth16 ZK proofs**, **ElGamal-encrypted amounts**, and **spending authorizations** for agents/subscriptions - without touching raw crypto primitives.
+> ShadowPay makes accepting **private, automated x402-style payments** on Solana simple. You get **on-chain PDA escrow**, **Groth16 ZK proofs**, **ElGamal-encrypted amounts**, and **spending authorizations** for agents/subscriptions - all with a simple, high-level API.
 
 ---
 
@@ -111,7 +111,7 @@ export async function GET(req: NextRequest) {
 5. Program checks **bitmap nullifier** (O(1) replay protection) and settles
 6. Merchant decrypts amount if/when needed; facilitator remains **blind**
 
-> Privacy model: No third party (including ShadowPay) can see payment amounts. Sender knows what they paid; merchant can decrypt. Others cannot.
+> Privacy model: No third party (including ShadowPay) can see payment amounts. Sender knows what they paid; facilitators/settlers remain blind.
 
 **Program ID:** `GQBqwwoikYh7p6KEUHDUu5r9dHHXx9tMGskAPubmFPzD` ([View on Solscan](https://solscan.io/account/GQBqwwoikYh7p6KEUHDUu5r9dHHXx9tMGskAPubmFPzD))
 
@@ -262,6 +262,6 @@ MIT © Radr
 
 ## Notes & Disclaimers
 
-* **Privacy model**: amounts are visible only to payer + merchant; facilitators/settlers remain blind.
+* **Privacy model**: amounts are visible only to payer facilitators/settlers remain blind.
 * **Environment**: Some examples default to `devnet`. Switch to `mainnet-beta` when ready.
-* **Security**: Rotate API keys, validate webhooks, keep servers behind TLS.
+* **Security**: validate webhooks, keep servers behind TLS.
