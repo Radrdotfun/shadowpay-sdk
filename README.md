@@ -1,358 +1,267 @@
 # ShadowPay SDK
 
-> Private payments on Solana, as easy as Stripe.
+**Private payments on Solana - as easy as Stripe.**
 
-[![npm version](https://img.shields.io/npm/v/@shadowpay/client.svg)](https://www.npmjs.com/package/@shadowpay/client)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+* **Packages:** `@shadowpay/core`, `@shadowpay/client`, `@shadowpay/server`
+* **Language:** TypeScript
+* **License:** MIT
+* **Status:** Public beta (devnet support; mainnet coming soon)
 
-**ShadowPay** is a developer-friendly TypeScript SDK that makes accepting private payments on Solana as simple as using Stripe. No crypto complexity - just clean, production-ready code.
+> ShadowPay makes accepting **private, automated x402-style payments** on Solana simple. You get **on-chain PDA escrow**, **Groth16 ZK proofs**, **ElGamal-encrypted amounts**, and **spending authorizations** for agents/subscriptions - without touching raw crypto primitives.
+
+---
 
 ## ✨ Features
 
-- 🔐 **Zero-Knowledge Proofs** - Private payments without revealing amounts
-- ⚡ **3 Lines of Code** - Accept payments in minutes
-- 💰 **Multi-Token Support** - SOL, USDC, USDT out of the box
-- 🎨 **Beautiful DX** - TypeScript-first with excellent IDE support
-- 🔗 **Framework Agnostic** - Works with Next.js, Express, Remix, and more
-- 👛 **Wallet Support** - Phantom, Solflare, Backpack, and more
-- 🪝 **Webhooks** - Real-time payment notifications
-- 📦 **Zero Configuration** - Works out of the box
+* **Zero-Knowledge settlement** - Groth16 proofs verify payment validity without revealing sender or amount
+* **Encrypted amounts** - ElGamal (BN254); **only the merchant** can decrypt the value
+* **On-chain PDA escrow** - non-custodial, verifiable settlement (no off-chain IOUs)
+* **x402-friendly** - drop-in for API/paywall flows using HTTP 402
+* **Automatic payments** - ShadowID-tied spending authorizations with ZK rate-limits
+* **Multi-token** - SOL / USDC / USDT (any SPL token)
+* **TypeScript-first DX** - clear types, great IDE hints
+* **Framework-agnostic** - Next.js / Express / Remix / Fastify / Cloudflare Workers†
+* **Webhooks** - real-time notifications on payment events
+
+† Workers support uses fetch-compatible adapters; see examples.
+
+---
 
 ## 🚀 Quick Start
 
-### 1. Install
+### 1) Install
 
 ```bash
-npm install @shadowpay/client @shadowpay/server
+npm i @shadowpay/core @shadowpay/client @shadowpay/server
+# or
+pnpm add @shadowpay/core @shadowpay/client @shadowpay/server
 ```
 
-### 2. Client (3 lines)
+### 2) Client (3 lines)
 
-```typescript
-import { ShadowPay } from '@shadowpay/client';
+```ts
+import { ShadowPay } from '@shadowpay/client'
 
-const shadowpay = new ShadowPay();
+const sp = new ShadowPay()
 
-const payment = await shadowpay.pay({
-  to: 'YOUR_API_KEY',
-  amount: 0.001,
-  token: 'SOL',
-  wallet: phantomWallet,
-});
+const payment = await sp.pay({
+  to: '<MERCHANT_PUBKEY>',       // your merchant public key
+  amount: 0.001,                 // human units
+  token: 'SOL',                  // 'SOL' | 'USDC' | 'USDT' | <SPL mint>
+  wallet: window.phantom,        // Phantom / Solflare / Backpack
+})
 ```
 
-### 3. Server (middleware)
+### 3) Server (middleware)
 
-```typescript
-import { ShadowPay } from '@shadowpay/server';
+```ts
+import express from 'express'
+import { ShadowPay } from '@shadowpay/server'
 
-const shadowpay = new ShadowPay({ apiKey: 'YOUR_API_KEY' });
+const app = express()
+const shadowpay = new ShadowPay({ apiKey: process.env.SHADOWPAY_API_KEY! })
 
 app.get('/premium',
   shadowpay.requirePayment({ amount: 0.001, token: 'SOL' }),
   (req, res) => res.json({ secret: 'Premium content!' })
-);
+)
+
+app.listen(3000)
 ```
 
-That's it! 🎉
+---
 
-## 📖 Documentation
+## 🧩 Next.js Example (Route Handler)
 
-- [Quickstart Guide](./docs/quickstart.md) - Get started in 5 minutes
-- [API Reference](./docs/api-reference.md) - Complete API documentation
-- [Token Support](./docs/tokens.md) - Multi-token payments (SOL/USDC/USDT)
-- [Webhooks](./docs/webhooks.md) - Real-time payment notifications
-- [Advanced Usage](./docs/advanced.md) - Advanced features and customization
-
-## 💡 Philosophy
-
-**Hide all crypto complexity.** Developers should never see "Groth16", "ElGamal", or "nullifier" unless they want to.
-
-```typescript
-// ❌ Before ShadowPay
-const keys = await generateBN254KeyPair();
-const encrypted = elgamalEncrypt(amount, keys.publicKey);
-const proof = await groth16.fullProve(circuitInputs, wasmPath, zkeyPath);
-const nullifier = poseidonHash([privateKey, commitment, index]);
-await verifyProof(proof, publicSignals, verificationKey);
-// ... 50 more lines
-
-// ✅ With ShadowPay
-await shadowpay.pay({ to: 'merchant', amount: 0.001, token: 'SOL', wallet });
-```
-
-## 🏗️ Architecture
-
-```
-shadowpay-sdk/
-├── packages/
-│   ├── client/         # Browser SDK (payment generation)
-│   ├── server/         # Node.js SDK (payment verification)
-│   └── core/           # Shared crypto utilities
-├── examples/
-│   ├── nextjs-paywall/ # Next.js 14 example
-│   └── express-api/    # Express.js example
-└── docs/               # Documentation
-```
-
-## 📦 Packages
-
-| Package | Description | Version |
-|---------|-------------|---------|
-| [@shadowpay/client](./packages/client) | Browser SDK for making payments | ![npm](https://img.shields.io/npm/v/@shadowpay/client) |
-| [@shadowpay/server](./packages/server) | Node.js SDK for accepting payments | ![npm](https://img.shields.io/npm/v/@shadowpay/server) |
-| [@shadowpay/core](./packages/core) | Core cryptographic utilities | ![npm](https://img.shields.io/npm/v/@shadowpay/core) |
-
-## 🎯 Use Cases
-
-### Paywalls
-
-```typescript
-// Protect content behind payment
-app.get('/article',
-  shadowpay.requirePayment({ amount: 0.001, token: 'SOL' }),
-  (req, res) => res.json({ article: '...' })
-);
-```
-
-### API Monetization
-
-```typescript
-// Charge per API call
-app.post('/api/generate',
-  shadowpay.requirePayment({ amount: 0.01, token: 'SOL' }),
-  async (req, res) => {
-    const result = await aiModel.generate(req.body);
-    res.json(result);
-  }
-);
-```
-
-### Subscriptions
-
-```typescript
-// Monthly subscription
-app.get('/premium/*',
-  shadowpay.requirePayment({ amount: 10, token: 'USDC' }),
-  premiumContentHandler
-);
-```
-
-### Micro-Payments
-
-```typescript
-// Pay per feature
-const payment = await shadowpay.pay({
-  to: 'merchant',
-  amount: 0.0001, // Fraction of a cent
-  token: 'SOL',
-  wallet,
-});
-```
-
-## 🌟 Examples
-
-### Next.js Paywall
-
-```typescript
+```ts
 // app/api/premium/route.ts
-import { ShadowPay } from '@shadowpay/server';
+import { NextRequest, NextResponse } from 'next/server'
+import { ShadowPay } from '@shadowpay/server'
 
-const shadowpay = new ShadowPay({ apiKey: process.env.SHADOWPAY_API_KEY });
+const sp = new ShadowPay({ apiKey: process.env.SHADOWPAY_API_KEY! })
 
 export async function GET(req: NextRequest) {
-  const paymentHeader = req.headers.get('x-payment');
+  const hdr = req.headers.get('x-payment')
+  if (!hdr) return NextResponse.json({ error: 'Payment Required' }, { status: 402 })
 
-  if (!paymentHeader) {
-    return NextResponse.json({ ... }, { status: 402 });
-  }
+  const ok = await sp.verifyPayment(hdr, { amount: 0.001, token: 'SOL' })
+  if (!ok) return NextResponse.json({ error: 'Invalid payment' }, { status: 402 })
 
-  const isValid = await shadowpay.verifyPayment(paymentHeader, {
-    amount: 0.001,
-  });
-
-  if (!isValid) {
-    return NextResponse.json({ error: 'Invalid payment' }, { status: 402 });
-  }
-
-  return NextResponse.json({ secret: 'Premium content!' });
+  return NextResponse.json({ secret: 'Premium content!' })
 }
 ```
 
-See [full example](./examples/nextjs-paywall).
+---
 
-### Express API
+## 🎯 Use Cases
 
-```typescript
-import express from 'express';
-import { ShadowPay } from '@shadowpay/server';
+* **Paywalls** - protect routes/content with 402 flows
+* **API monetization** - charge per request (agents, data APIs)
+* **Subscriptions** - private, recurring payments via authorizations
+* **Micro-payments** - sub-cent features using SOL or stablecoins
 
-const app = express();
-const shadowpay = new ShadowPay({ apiKey: 'YOUR_API_KEY' });
+---
 
-// SOL payment
-app.get('/api/data/sol',
-  shadowpay.requirePayment({ amount: 0.001, token: 'SOL' }),
-  (req, res) => res.json({ data: 'SOL content' })
-);
+## 🔐 How It Works (high-level)
 
-// USDC payment
-app.get('/api/data/usdc',
-  shadowpay.requirePayment({ amount: 1, token: 'USDC' }),
-  (req, res) => res.json({ data: 'USDC content' })
-);
+1. Client generates an ElGamal keypair (BN254); public key shared with the merchant
+2. Client encrypts the **amount** to the merchant's public key
+3. Client creates a **Groth16 proof** attesting valid spend & authorization
+4. Server/settler verifies the proof and triggers **on-chain PDA escrow**
+5. Program checks **bitmap nullifier** (O(1) replay protection) and settles
+6. Merchant decrypts amount if/when needed; facilitator remains **blind**
 
-// Webhooks
-app.post('/webhooks/shadowpay',
-  express.raw({ type: 'application/json' }),
-  shadowpay.webhooks.handler((event) => {
-    console.log('Payment:', event.data);
-  })
-);
-
-app.listen(3000);
-```
-
-See [full example](./examples/express-api).
-
-## 🔐 How It Works
-
-1. **Client** generates ElGamal keys (stored in localStorage)
-2. **Client** encrypts payment amount with ElGamal on BN254
-3. **Client** generates zero-knowledge proof using Groth16
-4. **Client** submits proof to ShadowPay API
-5. **API** verifies proof and executes Solana transaction
-6. **Server** verifies payment and returns protected content
-
-**Privacy:** No one (including ShadowPay) can see the payment amount except the payer and merchant.
+> Privacy model: No third party (including ShadowPay) can see payment amounts. Sender knows what they paid; merchant can decrypt. Others cannot.
 
 **Program ID:** `GQBqwwoikYh7p6KEUHDUu5r9dHHXx9tMGskAPubmFPzD` ([View on Solscan](https://solscan.io/account/GQBqwwoikYh7p6KEUHDUu5r9dHHXx9tMGskAPubmFPzD))
 
-## 🛠️ Technology Stack
+---
 
-- **Zero-Knowledge Proofs:** Groth16 (via snarkjs)
-- **Encryption:** ElGamal on BN254 curve (via @noble/curves)
-- **Hashing:** Poseidon (via circomlibjs)
-- **Blockchain:** Solana (via @solana/web3.js)
-- **Wallets:** Phantom, Solflare, Backpack, and more
+## 🧱 Architecture (monorepo)
 
-## 🎨 Multi-Token Support
-
-| Token | Symbol | Use Case |
-|-------|--------|----------|
-| Solana | `SOL` | Fast micro-payments |
-| USD Coin | `USDC` | Stable pricing (USD-pegged) |
-| Tether USD | `USDT` | Stable pricing (USD-pegged) |
-
-```typescript
-// Pay with SOL
-await shadowpay.pay({ amount: 0.001, token: 'SOL', ... });
-
-// Pay with USDC
-await shadowpay.pay({ amount: 1.0, token: 'USDC', ... });
-
-// Pay with USDT
-await shadowpay.pay({ amount: 5.0, token: 'USDT', ... });
+```
+shadowpay-sdk/
+├─ packages/
+│  ├─ client/     # Browser SDK (payment generation, wallet adapters)
+│  ├─ server/     # Node SDK (verification, middleware, webhooks)
+│  └─ core/       # Shared types/crypto/utils
+├─ examples/
+│  ├─ nextjs-paywall/
+│  └─ express-api/
+└─ docs/
 ```
 
-See [token documentation](./docs/tokens.md) for details.
+---
+
+## 📦 Packages
+
+| Package             | Description                        | npm                                                    |
+| ------------------- | ---------------------------------- | ------------------------------------------------------ |
+| `@shadowpay/client` | Browser SDK for making payments    | [npm](https://www.npmjs.com/package/@shadowpay/client) |
+| `@shadowpay/server` | Node.js SDK for accepting payments | [npm](https://www.npmjs.com/package/@shadowpay/server) |
+| `@shadowpay/core`   | Core cryptographic utilities       | [npm](https://www.npmjs.com/package/@shadowpay/core)   |
+
+GitHub: [https://github.com/Radrdotfun/shadowpay-sdk](https://github.com/Radrdotfun/shadowpay-sdk)
+
+---
 
 ## 🪝 Webhooks
 
-Receive real-time notifications:
-
-```typescript
+```ts
 app.post('/webhooks/shadowpay',
   express.raw({ type: 'application/json' }),
   shadowpay.webhooks.handler((event) => {
     switch (event.type) {
       case 'payment.success':
-        console.log('Payment received:', event.data);
-        break;
+        // handle success
+        break
       case 'payment.failed':
-        console.log('Payment failed:', event.data);
-        break;
+        // handle failure
+        break
       case 'payment.refunded':
-        console.log('Payment refunded:', event.data);
-        break;
+        // handle refund
+        break
     }
   })
-);
+)
 ```
-
-See [webhook documentation](./docs/webhooks.md) for details.
-
-## 🧪 Testing
-
-Run tests:
-
-```bash
-# Install dependencies
-pnpm install
-
-# Build packages
-pnpm build
-
-# Run tests
-pnpm test
-```
-
-## 🤝 Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
-
-### Development Setup
-
-```bash
-# Clone repository
-git clone https://github.com/shadowpay/sdk.git
-cd sdk
-
-# Install dependencies
-pnpm install
-
-# Build packages
-pnpm build
-
-# Run examples
-cd examples/nextjs-paywall
-pnpm dev
-```
-
-## 📄 License
-
-MIT License - see [LICENSE](./LICENSE) for details.
-
-## 🌐 Links
-
-- **Website:** [radr.fun](https://radr.fun)
-- **Documentation:** [ShadowPay API](https://registry.scalar.com/@radr/apis/shadowpay-api)
-- **Telegram:** [t.me/radrdotfun](https://t.me/radrdotfun)
-- **Twitter:** [@radrdotfun](https://x.com/radrdotfun)
-- **GitHub:** [github.com/Radrdotfun/shadowpay-sdk](https://github.com/Radrdotfun/shadowpay-sdk)
-
-## 🙏 Acknowledgments
-
-Built with:
-- [snarkjs](https://github.com/iden3/snarkjs) - Zero-knowledge proof generation
-- [@noble/curves](https://github.com/paulmillr/noble-curves) - Elliptic curve cryptography
-- [circomlibjs](https://github.com/iden3/circomlibjs) - Poseidon hash
-- [@solana/web3.js](https://github.com/solana-labs/solana-web3.js) - Solana blockchain
-- [Turbo](https://turbo.build/) - Monorepo build system
-
-## 💬 Support
-
-Need help?
-
-- 📧 **Email:** hello@radr.fun
-- 💬 **Telegram:** [Join our community](https://t.me/radrdotfun)
-- 📚 **Docs:** [Documentation](https://registry.scalar.com/@radr/apis/shadowpay-api)
-- 🐛 **Issues:** [GitHub Issues](https://github.com/Radrdotfun/shadowpay-sdk/issues)
 
 ---
 
-**Made with ❤️ by the RADR team**
+## 🔧 Configuration & Security
 
-*Accept private payments on Solana in 3 lines of code.*
+* **API keys** via env vars: `SHADOWPAY_API_KEY`
+* **Network**: default `devnet`; override via SDK options or env
+* **Program ID**: `GQBqwwoikYh7p6KEUHDUu5r9dHHXx9tMGskAPubmFPzD`
+* **Rate limits**: ShadowID authorizations + ZK limits for agents
+* **No secrets in client**; never embed server keys in frontends
 
+---
+
+## 🧪 Testing
+
+```bash
+pnpm install
+pnpm build
+pnpm test
+```
+
+---
+
+## 📚 Documentation
+
+* Quickstart (5 min)
+* API Reference (client/server/core)
+* Token Support (SOL/USDC/USDT + custom SPL)
+* Webhooks
+* Advanced: custom wallets, authorizations, Workers
+
+> Full docs: [https://registry.scalar.com/@radr/apis/shadowpay-api/latest](https://registry.scalar.com/@radr/apis/shadowpay-api/latest)
+
+---
+
+## 🧠 Philosophy
+
+Hide crypto complexity by default. If you want raw primitives (Groth16, ElGamal, Poseidon, nullifiers), they're in `@shadowpay/core` - but typical apps never need to touch them.
+
+**Before**
+
+```ts
+// 50+ lines of proof plumbing and encryption
+```
+
+**With ShadowPay**
+
+```ts
+await sp.pay({ to: '<merchant>', amount: 0.001, token: 'SOL', wallet })
+```
+
+---
+
+## 🧰 Tech Stack
+
+* ZK: Groth16 (snarkjs)
+* Crypto: ElGamal (BN254) via `@noble/curves`
+* Hash: Poseidon (circomlibjs)
+* Chain: Solana (`@solana/web3.js`)
+* Build: Turbo / pnpm
+
+---
+
+## 🤝 Contributing
+
+PRs welcome! See `CONTRIBUTING.md`.
+
+### Dev setup
+
+```bash
+git clone https://github.com/Radrdotfun/shadowpay-sdk.git
+cd shadowpay-sdk
+pnpm install
+pnpm build
+pnpm -C examples/nextjs-paywall dev
+```
+
+---
+
+## 📄 License
+
+MIT © Radr
+
+---
+
+## Links
+
+* Website: [https://radr.fun](https://radr.fun)
+* Docs: [https://registry.scalar.com/@radr/apis/shadowpay-api/latest](https://registry.scalar.com/@radr/apis/shadowpay-api/latest)
+* Telegram: [https://t.me/radrdotfun](https://t.me/radrdotfun)
+* X (Twitter): [https://x.com/radrdotfun](https://x.com/radrdotfun)
+* GitHub: [https://github.com/Radrdotfun/shadowpay-sdk](https://github.com/Radrdotfun/shadowpay-sdk)
+
+---
+
+## Notes & Disclaimers
+
+* **Privacy model**: amounts are visible only to payer + merchant; facilitators/settlers remain blind.
+* **Environment**: Some examples default to `devnet`. Switch to `mainnet-beta` when ready.
+* **Security**: Rotate API keys, validate webhooks, keep servers behind TLS.
