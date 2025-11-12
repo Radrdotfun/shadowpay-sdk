@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
-**ShadowPay** is a developer-friendly TypeScript SDK that makes accepting private payments on Solana as simple as using Stripe. No crypto complexity—just clean, production-ready code.
+**ShadowPay** is a developer-friendly TypeScript SDK that makes accepting private payments on Solana as simple as using Stripe. No crypto complexity - just clean, production-ready code.
 
 ## ✨ Features
 
